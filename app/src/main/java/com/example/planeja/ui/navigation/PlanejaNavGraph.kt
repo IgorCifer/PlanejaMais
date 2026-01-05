@@ -11,6 +11,7 @@ import com.example.planeja.ui.metas.MetasScreen
 import com.example.planeja.ui.categorias.CategoriasScreen
 import com.example.planeja.ui.analise.AnaliseScreen
 import com.example.planeja.ui.ajustes.AjustesScreen
+import com.example.planeja.ui.transacoes.NovaTransacaoScreen
 
 @Composable
 fun PlanejaApp() {
@@ -45,11 +46,24 @@ fun PlanejaApp() {
             startDestination = Destination.Home.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Destination.Home.route) { HomeScreen() }
+            composable(Destination.Home.route) {
+                HomeScreen(
+                    onVerTodasMetas = { navController.navigate(Destination.Metas.route) },
+                    onNovaTransacao = { navController.navigate(Destination.NovaTransacao.route) }
+                )
+            }
             composable(Destination.Metas.route) { MetasScreen() }
             composable(Destination.Categorias.route) { CategoriasScreen() }
             composable(Destination.Analise.route) { AnaliseScreen() }
             composable(Destination.Ajustes.route) { AjustesScreen() }
+
+            // Rota adicional (fora da bottom bar)
+            composable(Destination.NovaTransacao.route) {
+                NovaTransacaoScreen(
+                    onTransacaoSalva = { navController.popBackStack() },
+                    onVoltar = { navController.popBackStack() }
+                )
+            }
         }
     }
 }
