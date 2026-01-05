@@ -7,6 +7,8 @@ sealed class Destination(val route: String, val label: String) {
     object Analise : Destination("analise", "Análise")
     object Ajustes : Destination("ajustes", "Ajustes")
 
+    object NovaTransacao : Destination("novaTransacao", "Nova transação")
+
     companion object {
         val bottomItems = listOf(Home, Metas, Categorias, Analise, Ajustes)
     }
