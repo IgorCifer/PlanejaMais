@@ -2,6 +2,7 @@ package com.example.planeja.data
 
 import android.content.Context
 import com.example.planeja.data.local.DatabaseProvider
+import com.example.planeja.data.repository.CategoriaRepositoryImpl
 import com.example.planeja.data.repository.MetaRepositoryImpl
 import com.example.planeja.data.repository.TransacaoRepositoryImpl
 import com.example.planeja.domain.repository.MetaRepository
@@ -14,10 +15,12 @@ class AppContainer(context: Context) {
     private val database = DatabaseProvider.getDatabase(context)
     private val transacaoDao = database.transacaoDao()
     private val metaDao = database.metaDao()
+    private val categoriaDao = database.categoriaDao()
 
     // Repositórios
     val transacaoRepository: TransacaoRepository = TransacaoRepositoryImpl(transacaoDao)
     val metaRepository: MetaRepository = MetaRepositoryImpl(metaDao)
+    val categoriaRepository = CategoriaRepositoryImpl(categoriaDao)
 
     // Use cases de Transações
     val adicionarTransacaoUseCase = AdicionarTransacaoUseCase(transacaoRepository)
@@ -28,4 +31,10 @@ class AppContainer(context: Context) {
     val atualizarMetaUseCase = AtualizarMetaUseCase(metaRepository)
     val deletarMetaUseCase = DeletarMetaUseCase(metaRepository)
     val listarMetasHomeUseCase = ListarMetasHomeUseCase(metaRepository)
+
+    // Use cases de Categorias
+    val criarCategoriaUseCase = CriarCategoriaUseCase(categoriaRepository)
+    val atualizarCategoriaUseCase = AtualizarCategoriaUseCase(categoriaRepository)
+    val deletarCategoriaUseCase = DeletarCategoriaUseCase(categoriaRepository)
+    val listarCategoriasUseCase = ListarCategoriasUseCase(categoriaRepository)
 }
