@@ -4,6 +4,7 @@ import com.example.planeja.data.local.dao.TransacaoDao
 import com.example.planeja.data.mapper.toDomain
 import com.example.planeja.data.mapper.toEntity
 import com.example.planeja.domain.model.Transacao
+import com.example.planeja.data.local.dao.CategoriaTotalDto
 import com.example.planeja.domain.repository.TransacaoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -29,4 +30,9 @@ class TransacaoRepositoryImpl(
     override suspend fun deletar(transacao: Transacao) {
         dao.delete(transacao.toEntity())
     }
+    override fun getTotaisDespesasPorCategoria(
+        mesStr: String,
+        anoStr: String
+    ): Flow<List<CategoriaTotalDto>> =
+        dao.getTotaisDespesasPorCategoria(mesStr, anoStr)
 }

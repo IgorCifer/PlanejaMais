@@ -1,5 +1,6 @@
 package com.example.planeja.domain.repository
 
+import com.example.planeja.data.local.dao.CategoriaTotalDto
 import com.example.planeja.domain.model.Transacao
 import kotlinx.coroutines.flow.Flow
 
@@ -14,4 +15,8 @@ interface TransacaoRepository {
     suspend fun atualizar(transacao: Transacao)
 
     suspend fun deletar(transacao: Transacao)
+    fun getTotaisDespesasPorCategoria(
+        mesStr: String,
+        anoStr: String
+    ): Flow<List<CategoriaTotalDto>>
 }
