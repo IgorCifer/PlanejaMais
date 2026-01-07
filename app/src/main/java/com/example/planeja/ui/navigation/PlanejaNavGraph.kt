@@ -22,7 +22,7 @@ fun PlanejaApp() {
     val currentRoute = currentBackStack?.destination?.route
 
     val context = LocalContext.current
-    val app = context.applicationContext as PlanejaApp   // pega o Application
+    val app = context.applicationContext as PlanejaApp
 
     Scaffold(
         bottomBar = {
@@ -62,7 +62,6 @@ fun PlanejaApp() {
             composable(Destination.Analise.route) { AnaliseRoute(app) }
             composable(Destination.Ajustes.route) { AjustesScreen() }
 
-            // Rota adicional (fora da bottom bar)
             composable(Destination.NovaTransacao.route) {
                 NovaTransacaoScreen(
                     onTransacaoSalva = { navController.popBackStack() },
