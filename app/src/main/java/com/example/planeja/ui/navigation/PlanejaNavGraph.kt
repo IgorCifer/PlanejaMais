@@ -11,9 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.*
 import com.example.planeja.ui.home.HomeScreen
 import com.example.planeja.ui.metas.MetasScreen
-import com.example.planeja.ui.analise.AnaliseScreen
 import com.example.planeja.ui.ajustes.AjustesScreen
 import com.example.planeja.ui.transacoes.NovaTransacaoScreen
+import com.example.planeja.ui.analise.AnaliseRoute
 
 @Composable
 fun PlanejaApp() {
@@ -22,7 +22,7 @@ fun PlanejaApp() {
     val currentRoute = currentBackStack?.destination?.route
 
     val context = LocalContext.current
-    val app = context.applicationContext as PlanejaApp   // pega o Application
+    val app = context.applicationContext as PlanejaApp
 
     Scaffold(
         bottomBar = {
@@ -59,10 +59,9 @@ fun PlanejaApp() {
             }
             composable(Destination.Metas.route) { MetasScreen() }
             composable(Destination.Categorias.route) { CategoriasRoute(app) }
-            composable(Destination.Analise.route) { AnaliseScreen() }
+            composable(Destination.Analise.route) { AnaliseRoute(app) }
             composable(Destination.Ajustes.route) { AjustesScreen() }
 
-            // Rota adicional (fora da bottom bar)
             composable(Destination.NovaTransacao.route) {
                 NovaTransacaoScreen(
                     onTransacaoSalva = { navController.popBackStack() },

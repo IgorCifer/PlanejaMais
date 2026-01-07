@@ -37,4 +37,8 @@ class AppContainer(context: Context) {
     val atualizarCategoriaUseCase = AtualizarCategoriaUseCase(categoriaRepository)
     val deletarCategoriaUseCase = DeletarCategoriaUseCase(categoriaRepository)
     val listarCategoriasUseCase = ListarCategoriasUseCase(categoriaRepository)
+    val obterResumoPorCategoriaUseCase = ObterResumoPorCategoriaUseCase(
+        transacaoRepository = transacaoRepository,
+        categoriaRepository = categoriaRepository
+    )
 }
