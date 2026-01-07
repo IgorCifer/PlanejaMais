@@ -1,5 +1,8 @@
 package com.example.planeja.ui.navigation
 
+import androidx.compose.ui.platform.LocalContext
+import com.example.planeja.PlanejaApp
+import com.example.planeja.ui.categorias.CategoriasRoute
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -8,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.*
 import com.example.planeja.ui.home.HomeScreen
 import com.example.planeja.ui.metas.MetasScreen
-import com.example.planeja.ui.categorias.CategoriasScreen
 import com.example.planeja.ui.analise.AnaliseScreen
 import com.example.planeja.ui.ajustes.AjustesScreen
 import com.example.planeja.ui.transacoes.NovaTransacaoScreen
@@ -18,6 +20,9 @@ fun PlanejaApp() {
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStack?.destination?.route
+
+    val context = LocalContext.current
+    val app = context.applicationContext as PlanejaApp   // pega o Application
 
     Scaffold(
         bottomBar = {
@@ -53,7 +58,7 @@ fun PlanejaApp() {
                 )
             }
             composable(Destination.Metas.route) { MetasScreen() }
-            composable(Destination.Categorias.route) { CategoriasScreen() }
+            composable(Destination.Categorias.route) { CategoriasRoute(app) }
             composable(Destination.Analise.route) { AnaliseScreen() }
             composable(Destination.Ajustes.route) { AjustesScreen() }
 

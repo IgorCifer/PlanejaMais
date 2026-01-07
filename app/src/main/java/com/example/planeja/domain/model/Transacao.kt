@@ -6,7 +6,7 @@ data class Transacao(
     val valor: Double,
     val descricao: String,
     val dataMillis: Long,
-    val categoriaId: Long?
+    val categoriaId: Long? = null
 )
 
 enum class TipoTransacao {
