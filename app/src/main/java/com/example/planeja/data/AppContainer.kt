@@ -3,6 +3,7 @@ package com.example.planeja.data
 import android.content.Context
 import com.example.planeja.data.local.DatabaseProvider
 import com.example.planeja.data.repository.CategoriaRepositoryImpl
+import com.example.planeja.data.repository.AuthRepositoryImpl
 import com.example.planeja.data.repository.MetaRepositoryImpl
 import com.example.planeja.data.repository.TransacaoRepositoryImpl
 import com.example.planeja.domain.repository.MetaRepository
@@ -20,11 +21,13 @@ class AppContainer(context: Context) {
     private val transacaoDao = database.transacaoDao()
     private val metaDao = database.metaDao()
     private val categoriaDao = database.categoriaDao()
+    private val userDao = database.userDao()
 
     // Repositórios
     val transacaoRepository: TransacaoRepository = TransacaoRepositoryImpl(transacaoDao)
     val metaRepository: MetaRepository = MetaRepositoryImpl(metaDao)
     val categoriaRepository = CategoriaRepositoryImpl(categoriaDao)
+    val authRepository = AuthRepositoryImpl(userDao, context)
 
     // Use cases de Transações
     val adicionarTransacaoUseCase = AdicionarTransacaoUseCase(transacaoRepository)
