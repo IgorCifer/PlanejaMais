@@ -32,18 +32,21 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-// This is the new, correct way
+
     kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
+
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -69,5 +72,8 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.material.icons.extended)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
 }

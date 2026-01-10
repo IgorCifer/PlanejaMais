@@ -8,14 +8,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.planeja.PlanejaApp
+import com.example.planeja.domain.model.Cotacao
 import com.example.planeja.domain.model.Transacao
-import androidx.compose.material.icons.filled.Add
 
 @Composable
 fun HomeScreen(
@@ -76,6 +76,26 @@ private fun HomeContent(
 
         Spacer(Modifier.height(24.dp))
 
+        // Card de cotações
+        when {
+            uiState.isLoadingCotacoes -> {
+                CircularProgressIndicator()
+                Spacer(Modifier.height(16.dp))
+            }
+            uiState.cotacoes.isNotEmpty() -> {
+                CotacoesCard(uiState.cotacoes)
+                Spacer(Modifier.height(24.dp))
+            }
+            uiState.erroCotacoes != null -> {
+                Text(
+                    text = "Erro ao carregar cotações",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(Modifier.height(16.dp))
+            }
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -105,4 +125,29 @@ private fun HomeContent(
 @Composable
 private fun TransacaoItemHome(transacao: Transacao) {
     Text("${transacao.descricao} - R$ %.2f".format(transacao.valor))
+}
+
+@Composable
+private fun CotacoesCard(cotacoes: List<Cotacao>) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            Text(
+                text = "Cotações hoje",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(Modifier.height(8.dp))
+
+            cotacoes.forEach { c ->
+                Text(
+                    text = "${c.code}/${c.codeIn}: R$ %.4f".format(c.valor),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
 }

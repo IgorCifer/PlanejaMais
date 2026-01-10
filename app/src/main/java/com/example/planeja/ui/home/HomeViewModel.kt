@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.planeja.PlanejaApp
+import com.example.planeja.domain.usecase.ObterCotacoesPrincipaisUseCase
 
 object HomeViewModelFactory {
     fun create(app: PlanejaApp) = viewModelFactory {
@@ -22,7 +23,9 @@ object HomeViewModelFactory {
             HomeViewModel(
                 listarMetasHomeUseCase = app.container.listarMetasHomeUseCase,
                 listarTransacoesRecentesUseCase = app.container.listarTransacoesRecentesUseCase,
-                transacaoRepository = app.container.transacaoRepository
+                transacaoRepository = app.container.transacaoRepository,
+                obterCotacoesPrincipaisUseCase = app.container.obterCotacoesPrincipaisUseCase
+
             )
         }
     }
@@ -31,7 +34,8 @@ object HomeViewModelFactory {
 class HomeViewModel(
     private val listarMetasHomeUseCase: ListarMetasHomeUseCase,
     private val listarTransacoesRecentesUseCase: ListarTransacoesRecentesUseCase,
-    private val transacaoRepository: TransacaoRepository
+    private val transacaoRepository: TransacaoRepository,
+    private val obterCotacoesPrincipaisUseCase: ObterCotacoesPrincipaisUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -39,6 +43,7 @@ class HomeViewModel(
 
     init {
         observarDados()
+        carregarCotacoes()
     }
 
     private fun observarDados() {
@@ -86,4 +91,34 @@ class HomeViewModel(
                 }
         }
     }
+
+    private fun carregarCotacoes() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isLoadingCotacoes = true,
+                erroCotacoes = null
+            )
+
+            val resultado = obterCotacoesPrincipaisUseCase()
+
+            _uiState.value = resultado.fold(
+                onSuccess = { lista ->
+                    _uiState.value.copy(
+                        isLoadingCotacoes = false,
+                        cotacoes = lista,
+                        erroCotacoes = null
+                    )
+                },
+                onFailure = { e ->
+                    _uiState.value.copy(
+                        isLoadingCotacoes = false,
+                        cotacoes = emptyList(),
+                        erroCotacoes = e.message ?: "Erro ao carregar cotações"
+                    )
+                }
+            )
+        }
+    }
+
+
 }

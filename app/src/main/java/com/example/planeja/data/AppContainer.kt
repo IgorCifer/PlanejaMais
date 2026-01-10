@@ -8,6 +8,10 @@ import com.example.planeja.data.repository.TransacaoRepositoryImpl
 import com.example.planeja.domain.repository.MetaRepository
 import com.example.planeja.domain.repository.TransacaoRepository
 import com.example.planeja.domain.usecase.*
+import com.example.planeja.data.remote.RemoteModule
+import com.example.planeja.data.repository.CurrencyRepositoryImpl
+import com.example.planeja.domain.repository.CurrencyRepository
+import com.example.planeja.domain.usecase.ObterCotacoesPrincipaisUseCase
 
 class AppContainer(context: Context) {
 
@@ -41,4 +45,12 @@ class AppContainer(context: Context) {
         transacaoRepository = transacaoRepository,
         categoriaRepository = categoriaRepository
     )
+    // Repositório de moedas (Frankfurter)
+    val currencyRepository: CurrencyRepository = CurrencyRepositoryImpl(
+        api = RemoteModule.frankfurterApi
+    )
+
+    // Use case de moedas
+    val obterCotacoesPrincipaisUseCase = ObterCotacoesPrincipaisUseCase(currencyRepository)
 }
+
