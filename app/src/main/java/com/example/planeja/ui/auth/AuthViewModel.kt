@@ -36,6 +36,12 @@ class AuthViewModel(
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
+
+            if (!isValidEmail(email)) {
+                _uiState.update { it.copy(error = "Email ou Senha Inválido") }
+                return@launch
+            }
+
             _uiState.update { it.copy(isLoading = true, error = null) }
 
             authRepository.login(email, password)
@@ -53,6 +59,33 @@ class AuthViewModel(
 
     fun register(email: String, password: String, name: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
+
+            when {
+                name.isBlank() -> {
+                    _uiState.update { it.copy(error = "Nome é obrigatório") }
+                    return@launch
+                }
+
+                !isValidName(name) -> {
+                    _uiState.update {
+                        it.copy(error = "Informe nome e sobrenome sem números")
+                    }
+                    return@launch
+                }
+
+                !isValidEmail(email) -> {
+                    _uiState.update { it.copy(error = "Email inválido") }
+                    return@launch
+                }
+
+                !isValidPassword(password) -> {
+                    _uiState.update {
+                        it.copy(error = "Senha deve ter no mínimo 6 caracteres e 1 número")
+                    }
+                    return@launch
+                }
+            }
+
             _uiState.update { it.copy(isLoading = true, error = null) }
 
             authRepository.register(email, password, name)
@@ -67,6 +100,21 @@ class AuthViewModel(
                     }
                 }
         }
+    }
+
+
+    private fun isValidName(name: String): Boolean {
+        val regex = Regex("^[A-Za-zÀ-ÿ]+(\\s[A-Za-zÀ-ÿ]+)+$")
+        return regex.matches(name.trim())
+    }
+
+    private fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    private fun isValidPassword(password: String): Boolean {
+        val hasNumber = password.any { it.isDigit() }
+        return password.length >= 6 && hasNumber
     }
 
     fun logout() {

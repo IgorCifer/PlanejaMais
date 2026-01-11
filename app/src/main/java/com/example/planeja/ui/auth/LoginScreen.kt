@@ -50,12 +50,6 @@ fun LoginScreen(
             color = MaterialTheme.colorScheme.primary
         )
 
-        Text(
-            text = "Bem-vindo de volta!",
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(top = 8.dp)
-        )
-
         Spacer(modifier = Modifier.height(48.dp))
 
         OutlinedTextField(

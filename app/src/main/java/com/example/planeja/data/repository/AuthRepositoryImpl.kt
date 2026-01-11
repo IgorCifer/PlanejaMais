@@ -22,7 +22,6 @@ class AuthRepositoryImpl(
 
     override suspend fun login(email: String, password: String): Result<User> {
         return try {
-            // Validações básicas
             if (email.isBlank() || password.isBlank()) {
                 return Result.failure(Exception("Email e senha não podem estar vazios"))
             }
@@ -31,7 +30,7 @@ class AuthRepositoryImpl(
             if (user == null) {
                 Result.failure(Exception("Usuário não encontrado"))
             } else if (!verifyPassword(password, user.passwordHash)) {
-                Result.failure(Exception("Senha incorreta"))
+                Result.failure(Exception("Senha ou email incorreto"))
             } else {
                 saveCurrentUserId(user.id)
                 Result.success(user.toUser())
@@ -43,7 +42,6 @@ class AuthRepositoryImpl(
 
     override suspend fun register(email: String, password: String, name: String): Result<User> {
         return try {
-            // Validações
             if (email.isBlank() || password.isBlank() || name.isBlank()) {
                 return Result.failure(Exception("Todos os campos são obrigatórios"))
             }
@@ -52,11 +50,6 @@ class AuthRepositoryImpl(
                 return Result.failure(Exception("Email inválido"))
             }
 
-            if (password.length < 6) {
-                return Result.failure(Exception("A senha deve ter no mínimo 6 caracteres"))
-            }
-
-            // Verifica se email já existe
             if (userDao.getUserByEmail(email) != null) {
                 return Result.failure(Exception("Email já cadastrado"))
             }
