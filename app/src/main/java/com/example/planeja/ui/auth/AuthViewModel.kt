@@ -20,7 +20,21 @@ class AuthViewModel(
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
 
-    fun login(email: String, password: String, onSuccess: () -> Unit) {
+    init {
+        restoreSession()
+    }
+
+    private fun restoreSession() {
+        viewModelScope.launch {
+            if (authRepository.isUserLoggedIn()) {
+                _currentUser.value = authRepository.getCurrentUser()
+            } else {
+                _currentUser.value = null
+            }
+        }
+    }
+
+    fun login(email: String, password: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
@@ -28,7 +42,6 @@ class AuthViewModel(
                 .onSuccess { user ->
                     _currentUser.value = user
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
-                    onSuccess()
                 }
                 .onFailure { error ->
                     _uiState.update {
@@ -65,9 +78,5 @@ class AuthViewModel(
 
     fun clearError() {
         _uiState.update { it.copy(error = null) }
-    }
-
-    fun isUserLoggedIn(): Boolean {
-        return authRepository.isUserLoggedIn()
     }
 }

@@ -99,7 +99,7 @@ fun LoginScreen(
                 onDone = {
                     focusManager.clearFocus()
                     if (email.isNotBlank() && password.isNotBlank()) {
-                        viewModel.login(email, password, onLoginSuccess)
+                        viewModel.login(email, password)
                     }
                 }
             ),
@@ -135,7 +135,7 @@ fun LoginScreen(
         Button(
             onClick = {
                 focusManager.clearFocus()
-                viewModel.login(email, password, onLoginSuccess)
+                viewModel.login(email, password)
             },
             modifier = Modifier
                 .fillMaxWidth()
