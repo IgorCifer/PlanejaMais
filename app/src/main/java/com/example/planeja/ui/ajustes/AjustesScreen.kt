@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Science // ✅ Ícone para debug
+import androidx.compose.material.icons.filled.Science
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,11 +26,9 @@ fun AjustesScreen(
     notificationRepository: NotificationRepository
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
-
-    // Estado das notificações
     val notificationsEnabled by notificationRepository.notificationsEnabled.collectAsState(initial = true)
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current // ✅ Para Toast
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -45,9 +43,6 @@ fun AjustesScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            // ========================================
-            // Card de Notificações (EXISTENTE)
-            // ========================================
             Card(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -94,11 +89,6 @@ fun AjustesScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            // ========================================
-            // ✅ NOVO: Seção de Testes de Notificação
-            // Só aparece em builds DEBUG
-            // ========================================
             if (BuildConfig.DEBUG) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -111,7 +101,6 @@ fun AjustesScreen(
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        // Header da seção debug
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -139,20 +128,19 @@ fun AjustesScreen(
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        // Botão 1: Teste Imediato
                         OutlinedButton(
                             onClick = {
                                 try {
                                     notificationRepository.testNotificationImmediately()
                                     Toast.makeText(
                                         context,
-                                        "✅ Notificação enviada!",
+                                        "Notificação enviada!",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 } catch (e: Exception) {
                                     Toast.makeText(
                                         context,
-                                        "❌ Erro: ${e.message}",
+                                        "Erro: ${e.message}",
                                         Toast.LENGTH_LONG
                                     ).show()
                                 }
@@ -173,20 +161,19 @@ fun AjustesScreen(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Botão 2: Teste com WorkManager (10 segundos)
                         OutlinedButton(
                             onClick = {
                                 try {
                                     notificationRepository.scheduleTestReminder()
                                     Toast.makeText(
                                         context,
-                                        "⏱️ Notificação agendada para daqui a 10 segundos. Minimize o app!",
+                                        "Notificação agendada para daqui a 10 segundos. Minimize o app!",
                                         Toast.LENGTH_LONG
                                     ).show()
                                 } catch (e: Exception) {
                                     Toast.makeText(
                                         context,
-                                        "❌ Erro ao agendar: ${e.message}",
+                                        "Erro ao agendar: ${e.message}",
                                         Toast.LENGTH_LONG
                                     ).show()
                                 }
@@ -210,9 +197,6 @@ fun AjustesScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // ========================================
-            // Botão de Logout (EXISTENTE)
-            // ========================================
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { showLogoutDialog = true }
@@ -237,10 +221,6 @@ fun AjustesScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            // ========================================
-            // Info sobre horário (EXISTENTE)
-            // ========================================
             if (notificationsEnabled) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),

@@ -266,7 +266,6 @@ private fun HomeContent(
                 }
             }
 
-            // Transações recentes
             item {
                 Text(
                     text = "Transações recentes",
@@ -393,7 +392,6 @@ private fun TransacaoItemHome(transacao: Transacao) {
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                // Se quiser, pode mostrar a data formatada aqui no futuro
             }
             Text(
                 text = (if (isReceita) "+R$ " else "-R$ ") +
