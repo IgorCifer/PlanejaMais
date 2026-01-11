@@ -1,5 +1,7 @@
 package com.example.planeja.ui.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -21,6 +23,7 @@ import com.example.planeja.ui.home.HomeScreen
 import com.example.planeja.ui.metas.MetasScreen
 import com.example.planeja.ui.transacoes.NovaTransacaoScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PlanejaApp(authViewModel: AuthViewModel) {
     val navController = rememberNavController()
@@ -45,7 +48,6 @@ fun PlanejaApp(authViewModel: AuthViewModel) {
         }
     }
 
-    // Verifica se está em uma rota de autenticação
     val isAuthRoute = currentRoute == Destination.Login.route ||
             currentRoute == Destination.Register.route
 
@@ -94,7 +96,6 @@ fun PlanejaApp(authViewModel: AuthViewModel) {
                 RegisterScreen(
                     viewModel = authViewModel,
                     onRegisterSuccess = {
-                        // NÃO navega
                     },
                     onNavigateBack = {
                         navController.popBackStack()
@@ -102,7 +103,6 @@ fun PlanejaApp(authViewModel: AuthViewModel) {
                 )
             }
 
-            // Rotas principais (protegidas)
             composable(Destination.Home.route) {
                 HomeScreen(
                     onVerTodasMetas = { navController.navigate(Destination.Metas.route) },
@@ -124,11 +124,11 @@ fun PlanejaApp(authViewModel: AuthViewModel) {
 
             composable(Destination.Ajustes.route) {
                 AjustesScreen(
-                    onLogout = {
-                        authViewModel.logout()
-                    }
+                    onLogout = { authViewModel.logout() },
+                    notificationRepository = app.container.notificationRepository
                 )
             }
+
             composable(Destination.NovaTransacao.route) {
                 NovaTransacaoScreen(
                     onTransacaoSalva = { navController.popBackStack() },

@@ -25,7 +25,6 @@ object HomeViewModelFactory {
                 listarTransacoesRecentesUseCase = app.container.listarTransacoesRecentesUseCase,
                 transacaoRepository = app.container.transacaoRepository,
                 obterCotacoesPrincipaisUseCase = app.container.obterCotacoesPrincipaisUseCase
-
             )
         }
     }
@@ -48,13 +47,8 @@ class HomeViewModel(
 
     private fun observarDados() {
         viewModelScope.launch {
-            // fluxo de metas (limite 3)
             val metasFlow = listarMetasHomeUseCase(3)
-
-            // fluxo de transações recentes (limite 5)
             val transacoesRecentesFlow = listarTransacoesRecentesUseCase(5)
-
-            // todas as transações para calcular saldo
             val todasTransacoesFlow = transacaoRepository.getTodasTransacoes()
 
             combine(
@@ -70,7 +64,7 @@ class HomeViewModel(
                     .sumOf { it.valor }
                 val saldo = totalReceitas - totalDespesas
 
-                HomeUiState(
+                _uiState.value.copy(
                     isLoading = false,
                     saldoAtual = saldo,
                     totalReceitas = totalReceitas,
@@ -119,6 +113,4 @@ class HomeViewModel(
             )
         }
     }
-
-
 }

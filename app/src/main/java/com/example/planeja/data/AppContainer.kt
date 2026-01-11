@@ -13,33 +13,31 @@ import com.example.planeja.data.remote.RemoteModule
 import com.example.planeja.data.repository.CurrencyRepositoryImpl
 import com.example.planeja.domain.repository.CurrencyRepository
 import com.example.planeja.domain.usecase.ObterCotacoesPrincipaisUseCase
+import com.example.planeja.data.repository.NotificationRepository
+import com.example.planeja.domain.repository.AuthRepository
 
-class AppContainer(context: Context) {
+class AppContainer(private val context: Context) {
 
-    // Database + DAOs
     private val database = DatabaseProvider.getDatabase(context)
     private val transacaoDao = database.transacaoDao()
     private val metaDao = database.metaDao()
     private val categoriaDao = database.categoriaDao()
     private val userDao = database.userDao()
 
-    // Repositórios
     val transacaoRepository: TransacaoRepository = TransacaoRepositoryImpl(transacaoDao)
     val metaRepository: MetaRepository = MetaRepositoryImpl(metaDao)
     val categoriaRepository = CategoriaRepositoryImpl(categoriaDao)
-    val authRepository = AuthRepositoryImpl(userDao, context)
 
-    // Use cases de Transações
+    val authRepository: AuthRepository = AuthRepositoryImpl(userDao, context)
+
     val adicionarTransacaoUseCase = AdicionarTransacaoUseCase(transacaoRepository)
     val listarTransacoesRecentesUseCase = ListarTransacoesRecentesUseCase(transacaoRepository)
 
-    // Use cases de Metas
     val criarMetaUseCase = CriarMetaUseCase(metaRepository)
     val atualizarMetaUseCase = AtualizarMetaUseCase(metaRepository)
     val deletarMetaUseCase = DeletarMetaUseCase(metaRepository)
     val listarMetasHomeUseCase = ListarMetasHomeUseCase(metaRepository)
 
-    // Use cases de Categorias
     val criarCategoriaUseCase = CriarCategoriaUseCase(categoriaRepository)
     val atualizarCategoriaUseCase = AtualizarCategoriaUseCase(categoriaRepository)
     val deletarCategoriaUseCase = DeletarCategoriaUseCase(categoriaRepository)
@@ -48,12 +46,12 @@ class AppContainer(context: Context) {
         transacaoRepository = transacaoRepository,
         categoriaRepository = categoriaRepository
     )
-    // Repositório de moedas (Frankfurter)
+
     val currencyRepository: CurrencyRepository = CurrencyRepositoryImpl(
         api = RemoteModule.frankfurterApi
     )
-
-    // Use case de moedas
     val obterCotacoesPrincipaisUseCase = ObterCotacoesPrincipaisUseCase(currencyRepository)
+    val notificationRepository: NotificationRepository by lazy {
+        NotificationRepository(context)
+    }
 }
-
