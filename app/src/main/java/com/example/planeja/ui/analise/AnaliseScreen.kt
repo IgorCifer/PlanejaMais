@@ -37,58 +37,113 @@ fun AnaliseScreen(
     onProximoMes: () -> Unit,
     onMesAnterior: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+    val bgLight = MaterialTheme.colorScheme.background
+    val textGray = MaterialTheme.colorScheme.onSurfaceVariant
+    val textDark = MaterialTheme.colorScheme.onSurface
+
+    Scaffold { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(bgLight)
         ) {
-            IconButton(onClick = onMesAnterior) {
-                Text("<")
-            }
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = "${mesNumeroParaNomeCurto(state.mes)} ${state.ano}",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(Modifier.width(8.dp))
-            IconButton(onClick = onProximoMes) {
-                Text(">")
-            }
-            Spacer(Modifier.weight(1f))
-            Text(
-                text = "Total: R$ %.2f".format(state.totalGeral),
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        if (state.isLoading) {
-            Box(Modifier.fillMaxSize()) {
-                CircularProgressIndicator(Modifier.align(Alignment.Center))
-            }
-        } else if (state.resumos.isEmpty()) {
-            Box(Modifier.fillMaxSize()) {
-                Text(
-                    text = "Nenhuma despesa neste mês",
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(vertical = 8.dp)
+            Surface(
+                color = Color.White,
+                shadowElevation = 2.dp
             ) {
-                items(state.resumos) { resumo ->
-                    ResumoCategoriaBar(
-                        resumo = resumo,
-                        totalGeral = state.totalGeral
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 16.dp)
+                ) {
+                    Text(
+                        text = "Análise",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color(0xFF474747)
                     )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = "Entenda seu comportamento financeiro",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = textGray
+                    )
+
+                    Spacer(Modifier.height(12.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = onMesAnterior) {
+                            Text("<")
+                        }
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = "${mesNumeroParaNomeCurto(state.mes)} ${state.ano}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = textDark
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        IconButton(onClick = onProximoMes) {
+                            Text(">")
+                        }
+                        Spacer(Modifier.weight(1f))
+                        Text(
+                            text = "Total: R$ %.2f".format(state.totalGeral),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = textDark
+                        )
+                    }
+                }
+            }
+
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else if (state.resumos.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Nenhuma despesa neste mês",
+                        color = textGray
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = innerPadding.calculateBottomPadding()),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
+                ) {
+                    items(state.resumos) { resumo ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                ResumoCategoriaBar(
+                                    resumo = resumo,
+                                    totalGeral = state.totalGeral
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

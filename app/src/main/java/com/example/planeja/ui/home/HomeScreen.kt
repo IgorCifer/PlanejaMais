@@ -1,6 +1,9 @@
 package com.example.planeja.ui.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -28,13 +31,20 @@ import com.example.planeja.domain.model.Transacao
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.runtime.remember
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     userName: String,
     onVerTodasMetas: () -> Unit = {},
-    onNovaTransacao: () -> Unit = {}
+    onNovaTransacao: () -> Unit = {},
+    onEditarTransacao: (Long) -> Unit = {}
 ) {
     val app = LocalContext.current.applicationContext as PlanejaApp
     val viewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory.create(app))
@@ -58,19 +68,24 @@ fun HomeScreen(
             uiState = uiState,
             userName = userName,
             onVerTodasMetas = onVerTodasMetas,
-            innerPadding = innerPadding
+            innerPadding = innerPadding,
+            onEditarTransacao = onEditarTransacao,
+            onExcluirTransacao = { t -> viewModel.deletarTransacao(t) }
         )
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun HomeContent(
     uiState: HomeUiState,
     userName: String,
     onVerTodasMetas: () -> Unit,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    onEditarTransacao: (Long) -> Unit,
+    onExcluirTransacao: (Transacao) -> Unit
 ) {
-    // Cores aproximadas do Figma (ajuste para combinar com seu tema)
+
     val headerColor = MaterialTheme.colorScheme.primary
     val incomeColor = Color(0xFF47F9FF)
     val expenseColor = Color(0xFF4D47FF)
@@ -82,7 +97,6 @@ private fun HomeContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     )  {
-        // Header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -247,7 +261,7 @@ private fun HomeContent(
                         )
                         Spacer(Modifier.height(8.dp))
                         LinearProgressIndicator(
-                            progress = meta.progresso.toFloat().coerceIn(0f, 1f),
+                            progress = { meta.progresso.toFloat().coerceIn(0f, 1f) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(6.dp)
@@ -274,8 +288,12 @@ private fun HomeContent(
                 )
             }
 
-            items(uiState.transacoesRecentes) { transacao ->
-                TransacaoItemHome(transacao = transacao)
+            items(uiState.transacoesRecentes, key = { it.id }) { transacao ->
+                TransacaoItemHomeSwipe(
+                    transacao = transacao,
+                    onEditar = { t -> onEditarTransacao(t.id) },
+                    onExcluir = { t -> onExcluirTransacao(t) }
+                )
             }
         }
     }
@@ -369,13 +387,29 @@ private fun CotacoesCardHome(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun TransacaoItemHome(transacao: Transacao) {
+private fun TransacaoItemHome(
+    transacao: Transacao,
+    onClick: () -> Unit
+) {
     val isReceita = transacao.tipo == TipoTransacao.RECEITA
     val valueColor = if (isReceita) Color(0xFF47F9FF) else Color(0xFF4D47FF)
 
+    val dataStr = remember(transacao.dataMillis) {
+        val instant = java.time.Instant.ofEpochMilli(transacao.dataMillis)
+        val localDate = java.time.LocalDateTime.ofInstant(
+            instant,
+            java.time.ZoneId.systemDefault()
+        ).toLocalDate()
+        val formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        formatter.format(localDate)
+    }
+
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -392,6 +426,12 @@ private fun TransacaoItemHome(transacao: Transacao) {
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = dataStr,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
             Text(
                 text = (if (isReceita) "+R$ " else "-R$ ") +
@@ -402,4 +442,72 @@ private fun TransacaoItemHome(transacao: Transacao) {
         }
     }
 }
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+private fun TransacaoItemHomeSwipe(
+    transacao: Transacao,
+    onEditar: (Transacao) -> Unit,
+    onExcluir: (Transacao) -> Unit
+) {
+    val dismissState = rememberSwipeToDismissBoxState(
+        initialValue = SwipeToDismissBoxValue.Settled,
+        positionalThreshold = { totalDistance: Float ->
+            totalDistance * 0.5f
+        }
+    )
+
+    LaunchedEffect(dismissState.currentValue) {
+        when (dismissState.currentValue) {
+            SwipeToDismissBoxValue.StartToEnd,
+            SwipeToDismissBoxValue.EndToStart -> {
+                onExcluir(transacao)
+            }
+            SwipeToDismissBoxValue.Settled -> Unit
+        }
+    }
+
+    SwipeToDismissBox(
+        state = dismissState,
+        backgroundContent = {
+            val direction = dismissState.dismissDirection
+
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        when (direction) {
+                            SwipeToDismissBoxValue.StartToEnd,
+                            SwipeToDismissBoxValue.EndToStart -> Color(0xFFF44336)
+                            else -> Color.Transparent
+                        }
+                    )
+                    .padding(horizontal = 24.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = when (direction) {
+                    SwipeToDismissBoxValue.StartToEnd -> Arrangement.Start
+                    SwipeToDismissBoxValue.EndToStart -> Arrangement.End
+                    else -> Arrangement.Center
+                }
+            ) {
+                when (direction) {
+                    SwipeToDismissBoxValue.StartToEnd,
+                    SwipeToDismissBoxValue.EndToStart -> Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Excluir",
+                        tint = Color.White
+                    )
+                    else -> Unit
+                }
+            }
+        }
+    ) {
+        TransacaoItemHome(
+            transacao = transacao,
+            onClick = { onEditar(transacao) }
+        )
+    }
+}
+
 

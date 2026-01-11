@@ -56,6 +56,7 @@ class MetasViewModel(
     }
 
 
+
     private fun carregarMetas() {
         viewModelScope.launch {
             listarMetasUseCase(Int.MAX_VALUE)
@@ -76,23 +77,6 @@ class MetasViewModel(
         }
     }
 
-    fun criarMeta(titulo: String, valorAtual: Double, valorMeta: Double) {
-        viewModelScope.launch {
-            criarMetaUseCase(
-                Meta(
-                    titulo = titulo,
-                    valorAtual = valorAtual,
-                    valorMeta = valorMeta
-                )
-            )
-        }
-    }
-
-    fun atualizarMeta(meta: Meta) {
-        viewModelScope.launch {
-            atualizarMetaUseCase(meta)
-        }
-    }
 
     fun deletarMeta(meta: Meta) {
         viewModelScope.launch {

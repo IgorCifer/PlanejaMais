@@ -17,16 +17,16 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PlanejaAccent2,          // mesmo azul do claro
+    primary = PlanejaAccent2,
     onPrimary = Color.White,
     secondary = PlanejaAccent3,
     onSecondary = Color.White,
     tertiary = PlanejaAccent1,
 
-    background = Color(0xFF101018),    // quase preto, mas não total
-    onBackground = Color(0xFF707070),  // texto principal bem claro
+    background = Color(0xFF101018),
+    onBackground = Color(0xFF707070),
 
-    surface = Color(0xFF181820),       // cards
+    surface = Color(0xFF181820),
     onSurface = Color(0xFF7A7A7A),
 
     surfaceVariant = Color(0xFF575757),
@@ -37,18 +37,18 @@ private val DarkColorScheme = darkColorScheme(
 
 
 private val LightColorScheme = lightColorScheme(
-    primary = PlanejaAccent2,          // header azul
+    primary = PlanejaAccent2,
     onPrimary = Color.White,
-    secondary = PlanejaAccent1,        // pode usar em botões secundários
+    secondary = PlanejaAccent1,
     onSecondary = PlanejaTextDark,
     tertiary = PlanejaAccent3,
-    background = PlanejaBgLight,       // fundo geral
+    background = PlanejaBgLight,
     onBackground = PlanejaTextDark,
-    surface = Color.White,             // cards
+    surface = Color.White,
     onSurface = PlanejaTextDark,
-    surfaceVariant = PlanejaSecondary, // superfícies alternativas
+    surfaceVariant = PlanejaSecondary,
     onSurfaceVariant = PlanejaTextGray,
-    outline = Color(0x1A000000),       // bordas suaves
+    outline = Color(0x1A000000),
 )
 
 @Composable

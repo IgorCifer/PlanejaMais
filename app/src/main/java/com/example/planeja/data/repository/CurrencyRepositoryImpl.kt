@@ -11,7 +11,7 @@ class CurrencyRepositoryImpl(
 
     private var cachedRates: List<Cotacao>? = null
     private var lastFetchTimeMillis: Long = 0L
-    private val cacheDurationMillis = 60_000L // 1 minuto
+    private val cacheDurationMillis = 60_000L
 
     override suspend fun obterCotacoesPrincipais(): Result<List<Cotacao>> {
         val now = System.currentTimeMillis()

@@ -1,6 +1,8 @@
 package com.example.planeja.ui.categorias
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +36,7 @@ import com.example.planeja.PlanejaApp
 import com.example.planeja.domain.model.Categoria
 import androidx.core.graphics.toColorInt
 import androidx.compose.ui.unit.sp
+
 
 @Composable
 fun CategoriasRoute(app: PlanejaApp) {
@@ -173,10 +176,8 @@ fun CategoriasScreen(
             isEditando = state.isEditando,
             nome = state.nome,
             corHex = state.corHex,
-            icone = state.icone,
             onNomeChange = onNomeChange,
             onCorChange = onCorChange,
-            onIconeChange = onIconeChange,
             onSalvarClick = onSalvarClick,
             onDismiss = onFecharDialog
         )
@@ -266,13 +267,19 @@ fun CategoriaDialog(
     isEditando: Boolean,
     nome: String,
     corHex: String,
-    icone: String,
     onNomeChange: (String) -> Unit,
     onCorChange: (String) -> Unit,
-    onIconeChange: (String) -> Unit,
     onSalvarClick: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    val cores = listOf(
+        "#FF6B6B",
+        "#4ECDC4",
+        "#FFD93D",
+        "#1A759F",
+        "#9D4EDD"
+    )
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -286,31 +293,41 @@ fun CategoriaDialog(
                     label = { Text("Nome") },
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                Spacer(Modifier.height(12.dp))
+
+                Text(text = "Cor", style = MaterialTheme.typography.bodyMedium)
                 Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = corHex,
-                    onValueChange = onCorChange,
-                    label = { Text("Cor (hex)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = icone,
-                    onValueChange = onIconeChange,
-                    label = { Text("Ícone (nome lógico)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    cores.forEach { hex ->
+                        val cor = try {
+                            Color(hex.toColorInt())
+                        } catch (e: Exception) {
+                            Color.Gray
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .background(cor, CircleShape)
+                                .border(
+                                    width = if (corHex == hex) 2.dp else 0.dp,
+                                    color = if (corHex == hex) MaterialTheme.colorScheme.onSurface else Color.Transparent,
+                                    shape = CircleShape
+                                )
+                                .clickable { onCorChange(hex) }
+                        )
+                    }
+                }
             }
         },
         confirmButton = {
-            TextButton(onClick = onSalvarClick) {
-                Text("Salvar")
-            }
+            TextButton(onClick = onSalvarClick) { Text("Salvar") }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
-            }
+            TextButton(onClick = onDismiss) { Text("Cancelar") }
         }
     )
 }

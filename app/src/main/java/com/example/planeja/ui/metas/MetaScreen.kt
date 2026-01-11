@@ -23,7 +23,14 @@ import com.example.planeja.PlanejaApp
 import com.example.planeja.domain.model.Meta
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.window.Dialog
+import androidx.compose.material3.TextFieldDefaults
 
 @Composable
 fun MetasScreen() {
@@ -302,57 +309,145 @@ private fun MetaFormDialog(
     var valorAtualText by remember { mutableStateOf(metaInicial.valorAtual.toString()) }
     var valorMetaText by remember { mutableStateOf(metaInicial.valorMeta.toString()) }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = if (metaInicial.id == 0L) "Nova meta" else "Editar meta",
-                fontWeight = FontWeight.Medium
-            )
-        },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = titulo,
-                    onValueChange = { titulo = it },
-                    label = { Text("Título da meta") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = valorAtualText,
-                    onValueChange = { valorAtualText = it },
-                    label = { Text("Valor atual") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = valorMetaText,
-                    onValueChange = { valorMetaText = it },
-                    label = { Text("Valor da meta") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = {
-                val valorAtual = valorAtualText.toDoubleOrNull() ?: 0.0
-                val valorMeta = valorMetaText.toDoubleOrNull() ?: 0.0
-                onConfirm(
-                    metaInicial.copy(
-                        titulo = titulo,
-                        valorAtual = valorAtual,
-                        valorMeta = valorMeta
+    val textDark = MaterialTheme.colorScheme.onSurface
+    val textGray = MaterialTheme.colorScheme.onSurfaceVariant
+    val bgLight = MaterialTheme.colorScheme.background
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 24.dp, vertical = 20.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (metaInicial.id == 0L) "Nova meta" else "Editar meta",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = textDark
                     )
-                )
-            }) {
-                Text("Salvar")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Fechar",
+                            tint = textGray
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(12.dp))
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Column {
+                        Text(
+                            text = "Título da meta",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = textDark
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        OutlinedTextField(
+                            value = titulo,
+                            onValueChange = { titulo = it },
+                            placeholder = { Text("Ex: Viagem para o exterior") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = bgLight,
+                                unfocusedContainerColor = bgLight,
+                                disabledContainerColor = bgLight
+                            )
+                        )
+                    }
+
+                    Column {
+                        Text(
+                            text = "Valor atual",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = textDark
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        OutlinedTextField(
+                            value = valorAtualText,
+                            onValueChange = { valorAtualText = it },
+                            placeholder = { Text("0,00") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = bgLight,
+                                unfocusedContainerColor = bgLight,
+                                disabledContainerColor = bgLight
+                            )
+                        )
+                    }
+
+                    Column {
+                        Text(
+                            text = "Valor da meta",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = textDark
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        OutlinedTextField(
+                            value = valorMetaText,
+                            onValueChange = { valorMetaText = it },
+                            placeholder = { Text("0,00") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = bgLight,
+                                unfocusedContainerColor = bgLight,
+                                disabledContainerColor = bgLight
+                            )
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(24.dp))
+
+                Button(
+                    onClick = {
+                        val valorAtual = valorAtualText.toDoubleOrNull() ?: 0.0
+                        val valorMeta = valorMetaText.toDoubleOrNull() ?: 0.0
+                        onConfirm(
+                            metaInicial.copy(
+                                titulo = titulo,
+                                valorAtual = valorAtual,
+                                valorMeta = valorMeta
+                            )
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(
+                        text = if (metaInicial.id == 0L) "Criar meta" else "Salvar alterações",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
+                }
             }
         }
-    )
+    }
 }

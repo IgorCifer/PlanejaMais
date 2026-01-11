@@ -88,24 +88,18 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun updateUser(user: User) {
-        // Buscar UserEntity completo do banco (precisa do passwordHash)
         val currentEntity = userDao.getUserById(user.id)
 
         if (currentEntity == null) {
             throw Exception("Usuário não encontrado")
         }
 
-        // Criar UserEntity atualizado mantendo o password
         val updatedEntity = currentEntity.copy(
             name = user.name,
             email = user.email
         )
 
-        // Atualizar no banco
         userDao.updateUser(updatedEntity)
-
-        // Não precisa atualizar SharedPreferences - apenas armazena ID
-        // O ViewModel já atualiza _currentUser.value
     }
 
     private fun hashPassword(password: String): String {

@@ -8,6 +8,6 @@ data class CategoriaEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val nome: String,
-    val corHex: String,    // ex: "#FF9800"
-    val icone: String      // ex: "food", "car" (nome lógico por enquanto)
+    val corHex: String,
+    val icone: String
 )
