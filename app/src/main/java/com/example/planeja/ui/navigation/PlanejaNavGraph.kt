@@ -9,7 +9,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.*
 import com.example.planeja.PlanejaApp
@@ -51,13 +53,20 @@ fun PlanejaApp(authViewModel: AuthViewModel) {
     val isAuthRoute = currentRoute == Destination.Login.route ||
             currentRoute == Destination.Register.route
 
+
     Scaffold(
         bottomBar = {
             if (!isAuthRoute && currentUser != null) {
-                NavigationBar {
+                val colorScheme = MaterialTheme.colorScheme
+                NavigationBar(
+                    containerColor = Color.White,
+                    contentColor = colorScheme.onSurface,
+                    tonalElevation = 4.dp
+                ) {
                     Destination.bottomItems.forEach { dest ->
+                        val selected = currentRoute == dest.route
                         NavigationBarItem(
-                            selected = currentRoute == dest.route,
+                            selected = selected,
                             onClick = {
                                 navController.navigate(dest.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
@@ -67,8 +76,36 @@ fun PlanejaApp(authViewModel: AuthViewModel) {
                                     restoreState = true
                                 }
                             },
-                            icon = { /* depois adiciona Icon() */ },
-                            label = { Text(dest.label) }
+                            icon = {
+                                dest.icon?.let { icon ->
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = dest.label,
+                                        tint = if (selected)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            },
+                            label = {
+                                Text(
+                                    text = dest.label,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = if (selected)
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
+                            alwaysShowLabel = true,
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+                            )
                         )
                     }
                 }
@@ -80,7 +117,6 @@ fun PlanejaApp(authViewModel: AuthViewModel) {
             startDestination = Destination.Login.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            // Rotas de autenticação
             composable(Destination.Login.route) {
                 LoginScreen(
                     viewModel = authViewModel,
@@ -105,6 +141,7 @@ fun PlanejaApp(authViewModel: AuthViewModel) {
 
             composable(Destination.Home.route) {
                 HomeScreen(
+                    userName = currentUser?.name ?: "Usuário",
                     onVerTodasMetas = { navController.navigate(Destination.Metas.route) },
                     onNovaTransacao = { navController.navigate(Destination.NovaTransacao.route) }
                 )

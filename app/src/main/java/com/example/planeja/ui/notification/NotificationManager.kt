@@ -53,7 +53,7 @@ class PlanejaNotificationManager(private val context: Context) {
         )
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification) // Crie este ícone
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle("Hora de registrar suas transações!")
             .setContentText("Não esqueça de adicionar suas despesas e receitas de hoje")
             .setContentIntent(pendingIntent)

@@ -1,7 +1,7 @@
 package com.example.planeja.domain.model
 
 data class ResumoCategoria(
-    val categoria: Categoria?,   // null = Sem categoria
+    val categoria: Categoria?,
     val total: Double,
-    val percentual: Double       // 0.0..1.0
+    val percentual: Double
 )

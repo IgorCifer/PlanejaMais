@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -27,11 +27,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.planeja.PlanejaApp
 import com.example.planeja.domain.model.Categoria
 import androidx.core.graphics.toColorInt
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun CategoriasRoute(app: PlanejaApp) {
@@ -66,38 +68,89 @@ fun CategoriasScreen(
     onSalvarClick: () -> Unit,
     onFecharDialog: () -> Unit
 ) {
+    val bgLight = MaterialTheme.colorScheme.background
+    val textGray = MaterialTheme.colorScheme.onSurfaceVariant
+
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = onNovoClick) {
+            FloatingActionButton(
+                onClick = onNovoClick,
+                containerColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.offset(y = (-8).dp)
+            ) {
                 Icon(Icons.Default.Add, contentDescription = "Nova categoria")
             }
         }
-    ) { padding ->
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .background(bgLight)
+                .padding(innerPadding)
         ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(Modifier.align(Alignment.Center))
-            } else {
-                if (state.categorias.isEmpty()) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(horizontal = 24.dp, vertical = 16.dp)
+                ) {
                     Text(
-                        text = "Nenhuma categoria cadastrada",
-                        modifier = Modifier.align(Alignment.Center)
+                        text = "Categorias",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF474747)
                     )
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(state.categorias) { categoria ->
-                            CategoriaItem(
-                                categoria = categoria,
-                                onEditarClick = { onEditarClick(categoria) },
-                                onExcluirClick = { onExcluirClick(categoria) }
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = "Organize seus gastos por categoria",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = textGray
+                    )
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                when {
+                    state.isLoading -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    state.categorias.isEmpty() -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Nenhuma categoria cadastrada",
+                                color = textGray
                             )
+                        }
+                    }
+
+                    else -> {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 24.dp),
+                            contentPadding = PaddingValues(bottom = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(state.categorias) { categoria ->
+                                CategoriaItem(
+                                    categoria = categoria,
+                                    onEditarClick = { onEditarClick(categoria) },
+                                    onExcluirClick = { onExcluirClick(categoria) }
+                                )
+                            }
                         }
                     }
                 }
@@ -136,36 +189,73 @@ fun CategoriaItem(
     onEditarClick: () -> Unit,
     onExcluirClick: () -> Unit
 ) {
+    val textDark = MaterialTheme.colorScheme.onSurface
+    val textGray = MaterialTheme.colorScheme.onSurfaceVariant
+
+    val corIcone = try {
+        Color(categoria.corHex.toColorInt())
+    } catch (e: Exception) {
+        MaterialTheme.colorScheme.primary
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(2.dp)
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
-                .padding(12.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .size(24.dp)
-                    .background(Color(categoria.corHex.toColorInt()), CircleShape)
-            )
-
-            Spacer(Modifier.width(12.dp))
+                    .size(40.dp)
+                    .background(corIcone.copy(alpha = 0.12f), shape = CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .background(corIcone, shape = CircleShape)
+                )
+            }
 
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text(text = categoria.nome, style = MaterialTheme.typography.bodyLarge)
-                Text(text = categoria.icone, style = MaterialTheme.typography.bodySmall)
+                Text(
+                    text = categoria.nome,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = textDark
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = "Gasto total",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = textGray
+                )
             }
 
-            IconButton(onClick = onEditarClick) {
-                Icon(Icons.Default.Edit, contentDescription = "Editar")
-            }
-            IconButton(onClick = onExcluirClick) {
-                Icon(Icons.Default.Delete, contentDescription = "Excluir")
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onEditarClick) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Editar categoria",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                IconButton(onClick = onExcluirClick) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Excluir categoria",
+                        tint = Color(0xFFD4183D)
+                    )
+                }
             }
         }
     }
@@ -193,19 +283,22 @@ fun CategoriaDialog(
                 OutlinedTextField(
                     value = nome,
                     onValueChange = onNomeChange,
-                    label = { Text("Nome") }
+                    label = { Text("Nome") },
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(8.dp))
                 OutlinedTextField(
                     value = corHex,
                     onValueChange = onCorChange,
-                    label = { Text("Cor (hex)") }
+                    label = { Text("Cor (hex)") },
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(8.dp))
                 OutlinedTextField(
                     value = icone,
                     onValueChange = onIconeChange,
-                    label = { Text("Ícone (nome lógico)") }
+                    label = { Text("Ícone (nome lógico)") },
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         },
