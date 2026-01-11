@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import com.example.planeja.domain.permission.NotificationPermissionManager
 import com.example.planeja.ui.auth.AuthViewModel
 import com.example.planeja.ui.auth.AuthViewModelFactory
 import com.example.planeja.ui.navigation.PlanejaApp
@@ -35,9 +36,15 @@ class MainActivity : ComponentActivity() {
             AuthViewModelFactory(app.container.authRepository)
         )[AuthViewModel::class.java]
 
+        val permissionManager = NotificationPermissionManager(this)
+
         setContent {
             PlanejaTheme {
-                PlanejaApp(authViewModel = authViewModel)
+                PlanejaApp(
+                    authViewModel = authViewModel,
+                    permissionManager = permissionManager,
+                    activity = this
+                )
             }
         }
     }
