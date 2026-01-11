@@ -15,7 +15,7 @@ class ObterResumoPorCategoriaUseCase(
 ) {
 
     operator fun invoke(mes: Int, ano: Int): Flow<List<ResumoCategoria>> {
-        val mesStr = mes.toString().padStart(2, '0')   // 1 -> "01"
+        val mesStr = mes.toString().padStart(2, '0')
         val anoStr = ano.toString()
 
         val totaisFlow: Flow<List<CategoriaTotalDto>> =

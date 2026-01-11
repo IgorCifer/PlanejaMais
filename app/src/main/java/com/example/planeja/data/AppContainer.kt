@@ -16,6 +16,7 @@ import com.example.planeja.domain.usecase.ObterCotacoesPrincipaisUseCase
 import com.example.planeja.data.repository.NotificationRepository
 import com.example.planeja.domain.repository.AuthRepository
 
+
 class AppContainer(private val context: Context) {
 
     private val database = DatabaseProvider.getDatabase(context)
@@ -32,6 +33,11 @@ class AppContainer(private val context: Context) {
 
     val adicionarTransacaoUseCase = AdicionarTransacaoUseCase(transacaoRepository)
     val listarTransacoesRecentesUseCase = ListarTransacoesRecentesUseCase(transacaoRepository)
+    val atualizarTransacaoUseCase = AtualizarTransacaoUseCase(transacaoRepository)
+
+    val deletarTransacaoUseCase = DeletarTransacaoUseCase(transacaoRepository)
+    val obterTransacaoPorIdUseCase = ObterTransacaoPorIdUseCase(transacaoRepository)
+
 
     val criarMetaUseCase = CriarMetaUseCase(metaRepository)
     val atualizarMetaUseCase = AtualizarMetaUseCase(metaRepository)

@@ -4,7 +4,9 @@ import android.app.Activity
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Notifications
@@ -14,6 +16,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.planeja.BuildConfig
@@ -44,273 +47,338 @@ fun AjustesScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Ajustes") }
-            )
-        }
-    ) { paddingValues ->
+    val bgLight = MaterialTheme.colorScheme.background
+    val textGray = MaterialTheme.colorScheme.onSurfaceVariant
+    val textDark = MaterialTheme.colorScheme.onSurface
+
+    Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
+                .background(bgLight)
         ) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onNavigateToEditProfile
+            Surface(
+                color = Color.White,
+                shadowElevation = 2.dp
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "Perfil",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = currentUser?.name ?: "Usuário",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Editar perfil",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Card(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = "Notificações",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column {
-                            Text(
-                                text = "Lembretes Diários",
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Text(
-                                text = "Receba lembretes para registrar suas transações",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-
-                    Switch(
-                        checked = notificationsEnabled,
-                        onCheckedChange = { enabled ->
-                            if (enabled) {
-                                if (permissionManager.isPermissionGranted()) {
-                                    scope.launch {
-                                        notificationRepository.setNotificationsEnabled(true)
-                                    }
-                                } else {
-                                    if (permissionManager.shouldShowRationale(activity)) {
-                                        showPermissionRationaleDialog = true
-                                    } else {
-                                        permissionManager.requestPermission(activity)
-                                    }
-                                }
-                            } else {
-                                scope.launch {
-                                    notificationRepository.setNotificationsEnabled(false)
-                                }
-                            }
-                        }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (BuildConfig.DEBUG) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Science,
-                                contentDescription = "Debug",
-                                tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "🧪 Testes de Notificação (Debug)",
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.onTertiaryContainer
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        OutlinedButton(
-                            onClick = {
-                                if (permissionManager.isPermissionGranted()) {
-                                    try {
-                                        notificationRepository.testNotificationImmediately()
-                                        Toast.makeText(
-                                            context,
-                                            "✅ Notificação enviada!",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    } catch (e: Exception) {
-                                        Toast.makeText(
-                                            context,
-                                            "❌ Erro: ${e.message}",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    }
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "⚠️ Conceda permissão primeiro",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    permissionManager.requestPermission(activity)
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Notifications,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Testar Notificação Imediata")
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        OutlinedButton(
-                            onClick = {
-                                if (permissionManager.isPermissionGranted()) {
-                                    try {
-                                        notificationRepository.scheduleTestReminder()
-                                        Toast.makeText(
-                                            context,
-                                            "⏱️ Notificação em 10s",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } catch (e: Exception) {
-                                        Toast.makeText(
-                                            context,
-                                            "❌ Erro: ${e.message}",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    }
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "⚠️ Conceda permissão primeiro",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    permissionManager.requestPermission(activity)
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Science,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Testar WorkManager (10s)")
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { showLogoutDialog = true }
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(horizontal = 24.dp, vertical = 16.dp)
+                        .padding(top = paddingValues.calculateTopPadding())
                 ) {
                     Text(
-                        text = "Sair da conta",
-                        style = MaterialTheme.typography.bodyLarge
+                        text = "Ajustes",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color(0xFF474747)
                     )
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                        contentDescription = "Sair",
-                        tint = MaterialTheme.colorScheme.error
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = "Personalize sua experiência",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = textGray
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (notificationsEnabled) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
-                    )
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    onClick = onNavigateToEditProfile
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "ℹ️ Você receberá lembretes diariamente às 20:00",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                            ) {
+                                Box(
+                                    modifier = Modifier.padding(8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Person,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                            Spacer(Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = "Perfil",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = textDark
+                                )
+                                Spacer(Modifier.height(2.dp))
+                                Text(
+                                    text = currentUser?.name ?: "Usuário",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = textGray
+                                )
+                            }
+                        }
+                    }
+                }
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = Color(0x26479DFF) // azul clarinho
+                            ) {
+                                Box(
+                                    modifier = Modifier.padding(8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Notifications,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                            Spacer(Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = "Notificações diárias",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = textDark
+                                )
+                                Spacer(Modifier.height(2.dp))
+                                Text(
+                                    text = "Receba lembretes sobre suas finanças",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = textGray
+                                )
+                            }
+                        }
+
+                        Switch(
+                            checked = notificationsEnabled,
+                            onCheckedChange = { enabled ->
+                                if (enabled) {
+                                    if (permissionManager.isPermissionGranted()) {
+                                        scope.launch {
+                                            notificationRepository.setNotificationsEnabled(true)
+                                        }
+                                    } else {
+                                        if (permissionManager.shouldShowRationale(activity)) {
+                                            showPermissionRationaleDialog = true
+                                        } else {
+                                            permissionManager.requestPermission(activity)
+                                        }
+                                    }
+                                } else {
+                                    scope.launch {
+                                        notificationRepository.setNotificationsEnabled(false)
+                                    }
+                                }
+                            }
                         )
                     }
                 }
+
+                if (BuildConfig.DEBUG) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                        ),
+                        shape = RoundedCornerShape(20.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.Science,
+                                    contentDescription = "Debug",
+                                    tint = MaterialTheme.colorScheme.onTertiaryContainer
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    text = "Testes de Notificação (Debug)",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                                )
+                            }
+
+                            Spacer(Modifier.height(12.dp))
+
+                            OutlinedButton(
+                                onClick = {
+                                    if (permissionManager.isPermissionGranted()) {
+                                        try {
+                                            notificationRepository.testNotificationImmediately()
+                                            Toast.makeText(
+                                                context,
+                                                "Notificação enviada!",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } catch (e: Exception) {
+                                            Toast.makeText(
+                                                context,
+                                                "Erro: ${e.message}",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Conceda permissão primeiro",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        permissionManager.requestPermission(activity)
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Notifications,
+                                    contentDescription = null
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text("Testar notificação imediata")
+                            }
+
+                            Spacer(Modifier.height(8.dp))
+
+                            OutlinedButton(
+                                onClick = {
+                                    if (permissionManager.isPermissionGranted()) {
+                                        try {
+                                            notificationRepository.scheduleTestReminder()
+                                            Toast.makeText(
+                                                context,
+                                                "Notificação em 10s",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        } catch (e: Exception) {
+                                            Toast.makeText(
+                                                context,
+                                                "Erro: ${e.message}",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Conceda permissão primeiro",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        permissionManager.requestPermission(activity)
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Science,
+                                    contentDescription = null
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text("Testar WorkManager (10s)")
+                            }
+                        }
+                    }
+                }
+
+                // Sair
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { showLogoutDialog = true },
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = Color(0x26D4183D)
+                            ) {
+                                Box(
+                                    modifier = Modifier.padding(8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                                        contentDescription = "Sair",
+                                        tint = Color(0xFFD4183D)
+                                    )
+                                }
+                            }
+                            Spacer(Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = "Sair",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = textDark
+                                )
+                                Spacer(Modifier.height(2.dp))
+                                Text(
+                                    text = "Encerrar sua sessão",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = textGray
+                                )
+                            }
+                        }
+                    }
+                }
+
+
+
+
+
             }
         }
     }

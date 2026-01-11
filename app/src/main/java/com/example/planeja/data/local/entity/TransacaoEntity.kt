@@ -19,9 +19,9 @@ import androidx.room.PrimaryKey
 )
 data class TransacaoEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val tipo: String,          // "RECEITA" ou "DESPESA"
+    val tipo: String,
     val valor: Double,
     val descricao: String,
-    val data: Long,            // timestamp em millis
+    val data: Long,
     val categoriaId: Long? = null
 )

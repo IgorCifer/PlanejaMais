@@ -35,7 +35,7 @@ interface TransacaoDao {
         """
     )
     fun getTotaisDespesasPorCategoria(
-        mesStr: String,  // ex: "01", "02"... "12"
-        anoStr: String   // ex: "2026"
+        mesStr: String,
+        anoStr: String
     ): Flow<List<CategoriaTotalDto>>
 }

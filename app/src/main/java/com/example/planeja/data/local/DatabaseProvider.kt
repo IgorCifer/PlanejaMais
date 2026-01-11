@@ -34,7 +34,7 @@ object DatabaseProvider {
                 PlanejaDatabase::class.java,
                 "planeja_db"
             )
-                .addMigrations(MIGRATION_1_2)  // ADICIONADO
+                .addMigrations(MIGRATION_1_2)
                 .build()
                 .also { INSTANCE = it }
         }

@@ -8,12 +8,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import androidx.navigation.navArgument
 import com.example.planeja.MainActivity
 import com.example.planeja.PlanejaApp
 import com.example.planeja.domain.permission.NotificationPermissionManager
@@ -153,7 +158,10 @@ fun PlanejaApp(
                 HomeScreen(
                     userName = currentUser?.name ?: "Usuário",
                     onVerTodasMetas = { navController.navigate(Destination.Metas.route) },
-                    onNovaTransacao = { navController.navigate(Destination.NovaTransacao.route) }
+                    onNovaTransacao = { navController.navigate(Destination.NovaTransacao.route) },
+                    onEditarTransacao = { id ->
+                        navController.navigate("novaTransacao/$id")
+                    }
                 )
             }
 
@@ -191,6 +199,21 @@ fun PlanejaApp(
 
             composable(Destination.NovaTransacao.route) {
                 NovaTransacaoScreen(
+                    transacaoId = null,
+                    onTransacaoSalva = { navController.popBackStack() },
+                    onVoltar = { navController.popBackStack() }
+                )
+            }
+
+            composable(
+                route = "novaTransacao/{transacaoId}",
+                arguments = listOf(
+                    navArgument("transacaoId") { type = NavType.LongType }
+                )
+            ) { backStackEntry ->
+                val id = backStackEntry.arguments?.getLong("transacaoId")
+                NovaTransacaoScreen(
+                    transacaoId = id,
                     onTransacaoSalva = { navController.popBackStack() },
                     onVoltar = { navController.popBackStack() }
                 )

@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.planeja.PlanejaApp
+import com.example.planeja.domain.model.Transacao
 import com.example.planeja.domain.usecase.ObterCotacoesPrincipaisUseCase
 
 object HomeViewModelFactory {
@@ -86,6 +87,11 @@ class HomeViewModel(
         }
     }
 
+    fun deletarTransacao(transacao: Transacao) {
+        viewModelScope.launch {
+            transacaoRepository.deletar(transacao)
+        }
+    }
     private fun carregarCotacoes() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
@@ -113,4 +119,7 @@ class HomeViewModel(
             )
         }
     }
+
 }
+
+
