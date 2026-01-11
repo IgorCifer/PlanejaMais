@@ -20,6 +20,9 @@ class AuthViewModel(
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
 
+    private val _updateState = MutableStateFlow<UpdateState>(UpdateState.Idle)
+    val updateState: StateFlow<UpdateState> = _updateState.asStateFlow()
+
     init {
         restoreSession()
     }
@@ -102,6 +105,52 @@ class AuthViewModel(
         }
     }
 
+    fun updateUserProfile(name: String, email: String) {
+        viewModelScope.launch {
+            try {
+                _updateState.value = UpdateState.Loading
+
+                if (name.isBlank() || name.length < 3) {
+                    _updateState.value = UpdateState.Error("Nome deve ter no mínimo 3 caracteres")
+                    return@launch
+                }
+
+                if (!isValidEmail(email)) {
+                    _updateState.value = UpdateState.Error("Email inválido")
+                    return@launch
+                }
+
+                val currentUser = _currentUser.value
+                if (currentUser == null) {
+                    _updateState.value = UpdateState.Error("Usuário não encontrado")
+                    return@launch
+                }
+
+                val updatedUser = currentUser.copy(name = name, email = email)
+                authRepository.updateUser(updatedUser)
+
+                _currentUser.value = updatedUser
+                _updateState.value = UpdateState.Success
+            } catch (e: Exception) {
+                _updateState.value = UpdateState.Error(e.message ?: "Erro ao atualizar perfil")
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.logout()
+            _currentUser.value = null
+        }
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(error = null) }
+    }
+
+    fun resetUpdateState() {
+        _updateState.value = UpdateState.Idle
+    }
 
     private fun isValidName(name: String): Boolean {
         val regex = Regex("^[A-Za-zÀ-ÿ]+(\\s[A-Za-zÀ-ÿ]+)+$")
@@ -115,16 +164,5 @@ class AuthViewModel(
     private fun isValidPassword(password: String): Boolean {
         val hasNumber = password.any { it.isDigit() }
         return password.length >= 6 && hasNumber
-    }
-
-    fun logout() {
-        viewModelScope.launch {
-            authRepository.logout()
-            _currentUser.value = null
-        }
-    }
-
-    fun clearError() {
-        _uiState.update { it.copy(error = null) }
     }
 }

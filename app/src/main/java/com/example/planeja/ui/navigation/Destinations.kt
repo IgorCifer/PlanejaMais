@@ -15,14 +15,13 @@ sealed class Destination(
 ) {
     object Login : Destination("login", "Login")
     object Register : Destination("register", "Cadastro")
-
     object Home : Destination("home", "Início", Icons.Filled.Home)
     object Metas : Destination("metas", "Metas", Icons.Filled.Flag)
     object Categorias : Destination("categorias", "Categorias", Icons.Filled.Category)
     object Analise : Destination("analise", "Análise", Icons.Filled.BarChart)
     object Ajustes : Destination("ajustes", "Ajustes", Icons.Filled.Settings)
-
     object NovaTransacao : Destination("novaTransacao", "Nova transação")
+    object EditarPerfil : Destination("editar_perfil", "Editar Perfil")
 
     companion object {
         val bottomItems = listOf(Home, Metas, Categorias, Analise, Ajustes)

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.planeja.data.local.entity.UserEntity
 
 @Dao
@@ -16,7 +17,6 @@ interface UserDao {
 
     @Query("SELECT * FROM users WHERE id = :userId")
     suspend fun getUserById(userId: Int): UserEntity?
-
-    @Query("DELETE FROM users WHERE id = :userId")
-    suspend fun deleteUser(userId: Int)
+    @Update
+    suspend fun updateUser(user: UserEntity)
 }

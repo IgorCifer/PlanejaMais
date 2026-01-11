@@ -14,8 +14,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.*
+import com.example.planeja.MainActivity
 import com.example.planeja.PlanejaApp
+import com.example.planeja.domain.permission.NotificationPermissionManager
 import com.example.planeja.ui.ajustes.AjustesScreen
+import com.example.planeja.ui.ajustes.EditarPerfilScreen
 import com.example.planeja.ui.analise.AnaliseRoute
 import com.example.planeja.ui.auth.AuthViewModel
 import com.example.planeja.ui.auth.LoginScreen
@@ -27,7 +30,11 @@ import com.example.planeja.ui.transacoes.NovaTransacaoScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PlanejaApp(authViewModel: AuthViewModel) {
+fun PlanejaApp(
+    authViewModel: AuthViewModel,
+    permissionManager: NotificationPermissionManager,
+    activity: MainActivity,
+) {
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStack?.destination?.route
@@ -39,14 +46,17 @@ fun PlanejaApp(authViewModel: AuthViewModel) {
 
 
     LaunchedEffect(currentUser) {
-        if (currentUser == null) {
-            navController.navigate(Destination.Login.route) {
-                popUpTo(0) { inclusive = true }
-            }
+        val targetRoute = if (currentUser == null) {
+            Destination.Login.route
         } else {
-            navController.navigate(Destination.Home.route) {
-                popUpTo(0) { inclusive = true }
+            Destination.Home.route
+        }
+
+        navController.navigate(targetRoute) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                inclusive = true
             }
+            launchSingleTop = true
         }
     }
 
@@ -162,7 +172,20 @@ fun PlanejaApp(authViewModel: AuthViewModel) {
             composable(Destination.Ajustes.route) {
                 AjustesScreen(
                     onLogout = { authViewModel.logout() },
-                    notificationRepository = app.container.notificationRepository
+                    notificationRepository = app.container.notificationRepository,
+                    permissionManager = permissionManager,
+                    activity = activity,
+                    authViewModel = authViewModel,
+                    onNavigateToEditProfile = {
+                        navController.navigate(Destination.EditarPerfil.route)
+                    }
+                )
+            }
+
+            composable(Destination.EditarPerfil.route) {
+                EditarPerfilScreen(
+                    authViewModel = authViewModel,
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
 
