@@ -50,7 +50,13 @@ fun PlanejaApp(
     val currentUser by authViewModel.currentUser.collectAsState()
 
 
-    LaunchedEffect(currentUser) {
+    var lastUserId by remember { mutableStateOf<Int?>(null) }
+
+    LaunchedEffect(currentUser?.id) {
+        val newId = currentUser?.id
+        if (newId == lastUserId) return@LaunchedEffect
+        lastUserId = newId
+
         val targetRoute = if (currentUser == null) {
             Destination.Login.route
         } else {
