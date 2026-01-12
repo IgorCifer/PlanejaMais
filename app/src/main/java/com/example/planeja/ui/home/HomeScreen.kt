@@ -114,7 +114,7 @@ private fun HomeContent(
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = "Seu saldo atual",
-                    color = Color.White.copy(alpha = 0.9f),
+                    color = Color.White,
                     fontSize = 14.sp
                 )
                 Spacer(Modifier.height(8.dp))

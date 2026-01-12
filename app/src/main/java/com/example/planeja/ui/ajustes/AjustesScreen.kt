@@ -51,12 +51,8 @@ fun AjustesScreen(
     val textGray = MaterialTheme.colorScheme.onSurfaceVariant
     val textDark = MaterialTheme.colorScheme.onSurface
 
-    Scaffold { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(bgLight)
-        ) {
+    Scaffold(
+        topBar = {
             Surface(
                 color = Color.White,
                 shadowElevation = 2.dp
@@ -65,7 +61,6 @@ fun AjustesScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp, vertical = 16.dp)
-                        .padding(top = paddingValues.calculateTopPadding())
                 ) {
                     Text(
                         text = "Ajustes",
@@ -80,114 +75,112 @@ fun AjustesScreen(
                     )
                 }
             }
+        }
+    ) { innerPadding ->
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 24.dp, vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(bgLight)
+                .padding(innerPadding)
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                onClick = onNavigateToEditProfile
             ) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                    onClick = onNavigateToEditProfile
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
+                        Box(
+                            modifier = Modifier.padding(8.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
-                            ) {
-                                Box(
-                                    modifier = Modifier.padding(8.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Person,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            }
-                            Spacer(Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = "Perfil",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = textDark
-                                )
-                                Spacer(Modifier.height(2.dp))
-                                Text(
-                                    text = currentUser?.name ?: "Usuário",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = textGray
-                                )
-                            }
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
                         }
                     }
-                }
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = Color(0x26479DFF) // azul clarinho
-                            ) {
-                                Box(
-                                    modifier = Modifier.padding(8.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Notifications,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            }
-                            Spacer(Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = "Notificações diárias",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = textDark
-                                )
-                                Spacer(Modifier.height(2.dp))
-                                Text(
-                                    text = "Receba lembretes sobre suas finanças",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = textGray
-                                )
-                            }
-                        }
 
-                        Switch(
-                            checked = notificationsEnabled,
-                            onCheckedChange = { enabled ->
+                    Spacer(Modifier.width(12.dp))
+
+                    Column {
+                        Text(
+                            text = "Perfil",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = textDark
+                        )
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            text = currentUser?.name ?: "Usuário",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = textGray
+                        )
+                    }
+                }
+            }
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color(0x26479DFF)
+                    ) {
+                        Box(
+                            modifier = Modifier.padding(8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Notifications,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.width(12.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Notificações diárias",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = textDark
+                        )
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            text = "Receba lembretes sobre suas finanças",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = textGray
+                        )
+                    }
+
+                    Switch(
+                        checked = notificationsEnabled,
+                        onCheckedChange = { enabled ->
                                 if (enabled) {
                                     if (permissionManager.isPermissionGranted()) {
                                         scope.launch {
@@ -323,7 +316,6 @@ fun AjustesScreen(
                     }
                 }
 
-                // Sair
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { showLogoutDialog = true },
@@ -374,14 +366,8 @@ fun AjustesScreen(
                         }
                     }
                 }
-
-
-
-
-
             }
         }
-    }
 
     if (showPermissionRationaleDialog) {
         AlertDialog(

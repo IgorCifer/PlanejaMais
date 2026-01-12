@@ -89,9 +89,12 @@ fun CategoriasScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(bgLight)
-                .padding(innerPadding)
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = innerPadding.calculateBottomPadding())
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -117,8 +120,7 @@ fun CategoriasScreen(
                 when {
                     state.isLoading -> {
                         Box(
-                            modifier = Modifier
-                                .fillMaxSize(),
+                            modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator()
@@ -183,6 +185,7 @@ fun CategoriasScreen(
         )
     }
 }
+
 
 @Composable
 fun CategoriaItem(
