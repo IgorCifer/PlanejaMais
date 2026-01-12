@@ -19,21 +19,25 @@ import androidx.core.view.WindowCompat
 private val DarkColorScheme = darkColorScheme(
     primary = PlanejaAccent2,
     onPrimary = Color.White,
+
     secondary = PlanejaAccent3,
     onSecondary = Color.White,
+
     tertiary = PlanejaAccent1,
+    onTertiary = Color.Black,
 
-    background = Color(0xFF101018),
-    onBackground = Color(0xFF707070),
+    background = Color(0xFF050712),
+    onBackground = Color(0xFFF5F5F5),
 
-    surface = Color(0xFF181820),
-    onSurface = Color(0xFF7A7A7A),
+    surface = Color(0xFFA8A8A8),
+    onSurface = Color(0xFFE5E5E5),
 
-    surfaceVariant = Color(0xFF575757),
-    onSurfaceVariant = Color(0xFF575757),
+    surfaceVariant = Color(0xFF181C28),
+    onSurfaceVariant = Color(0xFFCACACA),
 
     outline = Color(0x33FFFFFF)
 )
+
 
 
 private val LightColorScheme = lightColorScheme(
@@ -50,6 +54,8 @@ private val LightColorScheme = lightColorScheme(
     onSurfaceVariant = PlanejaTextGray,
     outline = Color(0x1A000000),
 )
+
+
 
 @Composable
 fun PlanejaTheme(
